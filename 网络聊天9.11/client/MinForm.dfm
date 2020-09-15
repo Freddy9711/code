@@ -16,9 +16,9 @@ object MintForm: TMintForm
   TextHeight = 13
   object MessageMemo: TMemo
     Left = 3
-    Top = 56
-    Width = 713
-    Height = 297
+    Top = 80
+    Width = 694
+    Height = 273
     Lines.Strings = (
       'MessageMemo')
     ReadOnly = True
@@ -27,28 +27,42 @@ object MintForm: TMintForm
   object SendMemo: TMemo
     Left = 8
     Top = 385
-    Width = 708
+    Width = 627
     Height = 81
     Lines.Strings = (
       'SendMemo')
     TabOrder = 1
   end
   object Btsend: TButton
-    Left = 632
-    Top = 472
+    Left = 641
+    Top = 385
     Width = 75
-    Height = 25
+    Height = 81
     Caption = #21457#36865
     TabOrder = 2
     OnClick = BtsendClick
   end
-  object UserBox: TComboBox
-    Left = 571
-    Top = 8
+  object btreaduser: TButton
+    Left = 457
+    Top = 28
+    Width = 75
+    Height = 25
+    Caption = #21152#36733#29992#25143
+    TabOrder = 3
+    OnClick = btreaduserClick
+  end
+  object userbox: TComboBox
+    Left = 552
+    Top = 30
     Width = 145
     Height = 21
     ItemHeight = 13
-    TabOrder = 3
-    Text = 'UserBox'
+    TabOrder = 4
+    Text = 'userbox'
+  end
+  object Timer1: TTimer
+    OnTimer = Timer1Timer
+    Left = 384
+    Top = 24
   end
 end

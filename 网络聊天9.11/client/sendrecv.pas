@@ -18,8 +18,8 @@ type
 
   C_RLOGIN = record
     Head: TChatHead;
-    Sign: Boolean;
-    NickName: array[0..19] of Char;
+//    Sign: Boolean;
+//    NickName: array[0..19] of Char;
     UserName: array[0..19] of Char;
     Password: array[0..19] of Char;
   end;
@@ -36,11 +36,16 @@ type
     Head: TChatHead;
   end;
 
+  RUserInfo = record
+    ID: Integer;
+    Name: array[0..19] of Char;
+    Tcpsocked: TSocket;
+  end;
+
   S_RUserList = record
     Head: TChatHead;
-    Usercount: Integer;
-    UserNameList: array[0..3, 0..20] of char;
-    UserID: array[0..3, 0..20] of char;
+    UserListLength: Integer;
+    UserList: array of RUserInfo;
   end;
 
   S_RRegeister = record
@@ -50,19 +55,17 @@ type
 
   S_RLogin = record
     Head: TChatHead;
+    Name: array [0..19]  of Char;
     Sign: Boolean;
   end;
 
 type
   TChat = record
     Head: TChatHead;
-    DestID: Integer;
     SrcID: Integer;
+    UserID:Integer;
     SrcName: array[0..19] of Char;
-    UersName: array[0..19] of Char;
-    Password: array[0..19] of Char;
-    Sign: Boolean;
-    UserInfoString: TStringList;
+    UserName: array[0..19] of Char;
     Msg: array[0..255] of AnsiChar;
   end;
 
@@ -82,7 +85,6 @@ type
     procedure Execute; override;
     procedure RegeisterMessageParse;
     procedure LoginMessageParse;
-    procedure UserListMessageParse;
   private
     FLock: TCriticalSection;
     Frecvsign: TRecvCode;
@@ -104,7 +106,6 @@ type
     MessageInfo: array[0..280] of TChat;
     SendOperator: Integer;
     procedure GetSock(Socked: TSocket);
-    procedure MakeMessage(Operation_: Integer; DestID_: Integer; SrcID_: Integer; Msg_: AnsiString);
     procedure Execute; override;
     procedure SetOperator(SendOperator_: Integer);
     procedure SendLoginMsg;
@@ -147,9 +148,9 @@ implementation
 uses
   MinForm;
 
-
 procedure TMessageRecv.Execute;
 begin
+  FUserList := TStringList.Create();
   while terminated = False do
   begin
     recv(Consocket, recvmes, 10240, 0);
@@ -161,10 +162,6 @@ begin
     else if headmes.Operation = S_LOGIN then
     begin
       LoginMessageParse;
-    end
-    else if headmes.Operation = S_GETONLINEUERS then
-    begin
-      UserListMessageParse;
     end;
     Suspend;
   end;
@@ -178,7 +175,7 @@ end;
 procedure TMessageRecv.LoginMessageParse;
 begin
   CopyMemory(@loginrecvobj, @recvmes, SizeOf(recvmes));
-  if loginrecvobj.Sign = True then
+  if loginrecvobj.Sign =  True  then
   begin
     Frecvsign := Loginsuccess;
   end
@@ -206,25 +203,6 @@ begin
   end;
 end;
 
-procedure TMessageRecv.UserListMessageParse;
-var
-  I: Integer;
-  J: Integer;
-  tmpnamestring: AnsiString;
-  tmpnodestring: AnsiString;
-  count: Integer;
-begin
-  FUserList := TStringList.Create;
-  CopyMemory(@infoobj, @recvmes, SizeOf(recvmes));
-  count := infoobj.Usercount;
-  FUserList.clear;
-  for I := 0 to count - 1 do
-  begin
-    tmpnamestring := StrPas(@(infoobj.UserNameList[I]));
-    FUserList.Add(tmpnamestring);
-  end;
-  FListCode := FinishList;
-end;
 
 
 
@@ -266,19 +244,23 @@ begin
   Consocket := Socked;
 end;
 
-procedure TMessageSend.MakeMessage(Operation_: Integer; DestID_: Integer; SrcID_: Integer; Msg_: AnsiString);
-begin
-
-end;
-
 procedure TMessageSend.MesmesSend;
+var
+  ChatMessage: TChat;
 begin
-
+  ChatMessage.Head.Flag := PACKAGE_FLAG;
+  ChatMessage.Head.Operation := C_CHAT;
+  ChatMessage.SrcID := PosID;
+  ChatMessage.UserID := MyID;
+  StrPCopy(ChatMessage.UserName, MyName);
+  StrPCopy(ChatMessage.SrcName, PosName);
+  StrPCopy(ChatMessage.Msg, MessageString);
+  send(Consocket, ChatMessage, SizeOf(ChatMessage), 0);
 end;
 
 procedure TMessageSend.SendGetUserInfo;
 var
-  Listmessage: S_RUserList;
+  Listmessage: C_RUserList;
 begin
   Listmessage.Head.Flag := PACKAGE_FLAG;
   Listmessage.Head.Operation := C_GETONLINEUERS;
@@ -293,10 +275,11 @@ begin
   Loginmessage.Head.Flag := PACKAGE_FLAG;
   Loginmessage.Head.Operation := C_LOGIN;
   Loginmessage.Head.Size := SizeOf(Loginmessage);
-  Loginmessage.Sign := False;
-  StrPCopy(Loginmessage.UserName, UserString.Strings[0]);
-  StrPCopy(Loginmessage.Password, UserString.Strings[1]);
-  send(Consocket, Loginmessage, SizeOf(Loginmessage), 0);
+//  Loginmessage.Sign := False;
+//  StrPCopy(Loginmessage.NickName, UserString.Strings[0]);
+  StrPCopy(Loginmessage.UserName, UserString.Strings[1]);
+  StrPCopy(Loginmessage.Password , UserString.Strings[2]);
+  send(Consocket,Loginmessage, SizeOf(Loginmessage), 0);
 end;
 
 procedure TMessageSend.SendRegisteredMsg;
@@ -306,8 +289,9 @@ begin
   RegisterMessage.Head.Flag := PACKAGE_FLAG;
   RegisterMessage.Head.Operation := C_REGEISTER;
   RegisterMessage.Head.Size := SizeOf(RegisterMessage);
-  StrPCopy(RegisterMessage.UserName, UserString.Strings[0]);
-  StrPCopy(RegisterMessage.Password, UserString.Strings[1]);
+  StrPCopy(RegisterMessage.NickName, UserString.Strings[0]);
+  StrPCopy(RegisterMessage.UserName, UserString.Strings[1]);
+  StrPCopy(RegisterMessage.Password, UserString.Strings[2]);
   send(Consocket, RegisterMessage, SizeOf(RegisterMessage), 0);
 end;
 
@@ -315,6 +299,8 @@ procedure TMessageSend.SetOperator(SendOperator_: Integer);
 begin
   self.SendOperator := SendOperator_;
 end;
+
+{ TReadUserInfo }
 
 initialization
   MessagePos := 0;

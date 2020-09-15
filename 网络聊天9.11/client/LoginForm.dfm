@@ -14,50 +14,40 @@ object FormLogin: TFormLogin
   OldCreateOrder = False
   PixelsPerInch = 96
   TextHeight = 13
-  object Label1: TLabel
-    Left = 24
-    Top = 67
-    Width = 24
-    Height = 13
-    Caption = #26165#31216
-  end
   object Label2: TLabel
-    Left = 24
-    Top = 107
+    Left = 32
+    Top = 105
     Width = 36
     Height = 13
     Caption = #29992#25143#21517
   end
   object Label3: TLabel
-    Left = 24
+    Left = 44
     Top = 147
     Width = 24
     Height = 13
     Caption = #23494#30721
   end
-  object usernameedit: TEdit
-    Left = 72
-    Top = 64
+  object Label1: TLabel
+    Left = 44
+    Top = 67
+    Width = 24
+    Height = 13
+    Caption = #26165#31216
+  end
+  object UserIdEdit: TEdit
+    Left = 74
+    Top = 102
     Width = 169
     Height = 21
     TabOrder = 0
-    Text = '123'
-  end
-  object UserIdEdit: TEdit
-    Left = 72
-    Top = 104
-    Width = 169
-    Height = 21
-    TabOrder = 1
-    Text = '123'
   end
   object PasswordEdit: TEdit
-    Left = 72
+    Left = 74
     Top = 144
     Width = 169
     Height = 21
-    TabOrder = 2
-    Text = '123'
+    TabOrder = 1
   end
   object BtLogin: TButton
     Left = 8
@@ -65,7 +55,7 @@ object FormLogin: TFormLogin
     Width = 75
     Height = 25
     Caption = #30331#24405
-    TabOrder = 3
+    TabOrder = 2
     OnClick = BtLoginClick
   end
   object BtRegeister: TButton
@@ -74,7 +64,7 @@ object FormLogin: TFormLogin
     Width = 75
     Height = 25
     Caption = #27880#20876
-    TabOrder = 4
+    TabOrder = 3
     OnClick = BtRegeisterClick
   end
   object BtEnd: TButton
@@ -83,7 +73,14 @@ object FormLogin: TFormLogin
     Width = 75
     Height = 25
     Caption = #21462#28040
-    TabOrder = 5
+    TabOrder = 4
     OnClick = BtEndClick
+  end
+  object UserNameEdit: TEdit
+    Left = 74
+    Top = 64
+    Width = 169
+    Height = 21
+    TabOrder = 5
   end
 end

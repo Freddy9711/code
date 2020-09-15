@@ -16,13 +16,15 @@ uses
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
+  MessageInfo := TMessageInfo.Create;
   UserString := TStringList.Create;
-  MessageString := TStringList.Create;
   UserInfoList := TStringList.Create;
+  userinfo:= Tuserinfo.Create;
   sendobj := TMessageSend.Create(True);
   recvobj := TMessageRecv.Create(True);
   Client := Tcilent.Create(False);
-  client.SetIPPort('127.0.0.1', 1777);
+   client.SetIPPort('10.246.54.171', 1234);
+//  client.SetIPPort('10.246.54.151', 1234);
   while True do
   begin
     if client.ConnectFailed then

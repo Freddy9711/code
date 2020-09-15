@@ -8,15 +8,16 @@ uses
 
 type
   TFormLogin = class(TForm)
-    usernameedit: TEdit;
     UserIdEdit: TEdit;
     PasswordEdit: TEdit;
     BtLogin: TButton;
     BtRegeister: TButton;
     BtEnd: TButton;
-    Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
+    Label1: TLabel;
+    UserNameEdit: TEdit;
+
     procedure BtEndClick(Sender: TObject);
     procedure BtLoginClick(Sender: TObject);
     procedure AddUserInfo;
@@ -29,9 +30,12 @@ type
 var
   FormLogin: TFormLogin;
   UserString: TStringList;
-  MessageString: TStringList;
   UserInfoList: TStringList;
   LoginSign: Boolean;
+  MyID:Integer;
+  PosID:Integer;
+  MyName: AnsiString;
+  PosName: AnsiString;
 
 implementation
 
@@ -43,6 +47,7 @@ procedure TFormLogin.AddUserInfo;
 begin
  // FLock.Enter;
 //  try
+  UserString.Add(UserNameEdit.Text);
   UserString.Add(UserIdEdit.Text);
   UserString.add(PasswordEdit.Text);
  // finally
@@ -84,6 +89,7 @@ begin
     begin
       ShowMessage('µÇÂ½³É¹¦');
       ModalResult := 1;
+      MyName := UsernameEdit.Text;
       break;
     end;
   end;
@@ -122,6 +128,8 @@ begin
     end;
   end;
 end;
+
+
 
 end.
 
